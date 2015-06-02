@@ -9,6 +9,7 @@ Currently Deck.ext.js provides the following extensions:
 - deck.asvg.js, provides a support for including and animating SVG images,
 - deck.clone.js, provides a support for cloning a deck presentation to another window,
 - deck.notes.js, provides a support for adding and viewing speaker notes.
+- deck.animator.js, provides a support for animating HTML elements.
 
 Currently Deck.ext.js provides the following themes:
 
@@ -99,6 +100,9 @@ To clone a deck presentation just press `c`.
 The `deck.notes.js` extensions allows users to toggle speaker notes display by pressing the `n` key.
 To add a note to a slide just add a simple div with a .notes class like below:
 
+
+### Example
+
         <section class="slide" id="title-slide">
             <h1>The Presentation Title</h1>
         </section>
@@ -125,3 +129,67 @@ To add a note to a slide just add a simple div with a .notes class like below:
         </section>
 
 This extension is better used together with the `deck.clone.js` extension.
+
+##deck.animator.js extension
+
+The `deck.animator.js` extension allows users animate HTML elements in their slides.
+There is at most an animator for each slide.
+
+The slide is linked to its animator thanks to the value of its custom attribute `data-dahu-animator`.
+The JSON description of an animation follows the following format: 
+
+        {
+          "target": A CSS selector for the slides in which the animation occurs,
+          "actions": [
+            {
+              "id": A chain to identify the action,
+              "type": either "move", "appear" or "disappear",
+              "target": The id of the HTML element to which the action applies,
+              "duration": The duration of the action in ms,
+              "trX": ("move" type only) the value in pixels of the abs translation,
+              "trY": ("move" type only) the value in pixels of the ord translation
+            },
+            ...
+          ]
+        }
+
+The following example makes the text disappear, then move and reappear as it moves:
+
+
+### Example
+
+        <section class="slide" id="containing_slide" data-dahu-animator="animDescription">
+            <div id="moving_text">
+                This text is animated
+            </div>
+            <script type="text/javascript">
+                var animDescription = {
+                    "target": "#containing_slide",
+                    "actions": [
+                        {
+                            "id": "action1",
+                            "type": "disappear",
+                            "target": "#moving_text",
+                            "trigger": "onChange",
+                            "duration": 1000
+                        },
+                        {  
+                            "id": "action2,
+                            "type": "move",
+                            "target": "#moving_text",
+                            "trigger": "afterPrevious",
+                            "trX": 150,
+                            "trY": 100,
+                            "duration": 2000
+                        },
+                        {
+                            "id": "action3",
+                            "type": "appear",
+                            "target": "#moving_text",
+                            "trigger": "withPrevious",
+                            "duration": 1000
+                        }
+                    ]
+                };
+            </script>
+        </section>
